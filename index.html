@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tree</title>
+    <style>
+        .unlink {
+            text-decoration: none;
+            color: #000;
+        }
+        .link {
+            cursor: pointer;
+            color: blue
+        }
+        li {
+            font-size: 1.2em;
+            list-style-type:none
+        }
+    </style>
+</head>
+<body>
+    <ul id="list"></ul>
+<script>
+    tree =
+        [
+            {
+                "name":"trollbert",
+                "nodes":[
+                    {
+                        "name":"mumu"
+                    }
+                ]
+            },
+            {
+                "name":"cucu1",
+                "nodes":[
+                    {
+                        "name":"mucu",
+                        "nodes":[
+                            {
+                                "name":"bubu"
+                            },
+                            {
+                                "name":"bibi"
+                            }
+                        ]
+                    },
+                    {
+                        "name":"cucu2"
+                    }
+                ]
+            },
+            {
+                "name":"pipi"
+            },
+            {
+                "name":"humpty",
+                "nodes":[
+                    {
+                        "name":"dumpty"
+                    }
+                ]
+            }
+        ];
+    //structure:
+        // +trollbert
+        //     mumu
+        // +cucu1
+        //     +mucu
+        //         bubu
+        //         bibi
+        //     cucu2
+        // pipi
+        // +humpty
+        //     dumpty
+
+    var $ = function (selector) {
+        return document.querySelector(selector);
+    };
+
+    console.log(tree);
+    var list = $('#list');
+    render(tree, list);
+    
+    function render(nodes,className) {
+        nodes.forEach(function (node, index) {
+            var li = document.createElement('li');
+            li.classList.add("item-" + index);
+
+            if (node.nodes) {
+                li.addEventListener("click", function (e) {
+                    render(node.nodes, e.target.className);
+                });
+                li.style.color = "blue";
+                li.innerText = '+' + node.name;
+            } else {
+
+                li.innerText = node.name;
+                li.style.color = "black";
+
+            }
+            $((className == "item-" + index) ? '.' + className : '#list').appendChild(li);
+        });
+    }
+
+</script>
+</body>
+</html>
+
+
