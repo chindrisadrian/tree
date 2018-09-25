@@ -56,24 +56,35 @@
 </div>
 
 <script>
-    document.querySelector('.tree').addEventListener('click', function (e) {
-      var li = e.target;
-      if (li.getElementsByTagName('ul').length === 0) {
-	      return;
-      }
-      li.classList.toggle('open');
-    });
-    tree(document.querySelectorAll('.tree > ul > li'));
-    
-    function tree(collection) {
-        collection.forEach(function (li) {
-        	var nodeList = li.querySelectorAll(':scope > ul');
-        	if (nodeList.length > 0) {
-        		li.classList.add('has-children');
-        		tree(nodeList[0].querySelectorAll('li'));
-	        }
+
+    var tree = (function () {
+        document.querySelector('.tree').addEventListener('click', function (e) {
+          var li = e.target;
+          if (li.getElementsByTagName('ul').length === 0) {
+              return;
+          }
+          li.classList.toggle('open');
         });
-    }
+
+        function tree(collection) {
+            collection.forEach(function (li) {
+                var nodeList = li.querySelectorAll(':scope > ul');
+                if (nodeList.length > 0) {
+                    li.classList.add('has-children');
+                    tree(nodeList[0].querySelectorAll('li'));
+                }
+            });
+        }
+
+        return {
+            tree: tree
+        }
+    })();
+
+    collection = document.querySelectorAll('.tree > ul > li');
+
+    tree.tree(collection);
+
 </script>
 
 </body>
