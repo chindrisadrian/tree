@@ -34,6 +34,13 @@
                     <ul>
                         <li>bubu</li>
                         <li>bibi</li>
+	                      <li>baba
+		                      <ul>
+			                      <li>x</li>
+			                      <li>y</li>
+			                      <li>z</li>
+		                      </ul>
+	                      </li>
                     </ul>
                 </li>
                 <li>cucu</li>
@@ -56,10 +63,16 @@
       }
       li.classList.toggle('open');
     });
-    tree();
+    tree(document.querySelectorAll('.tree > ul > li'));
     
-    function tree() {
-    	  //tree();
+    function tree(collection) {
+        collection.forEach(function (li) {
+        	var nodeList = li.querySelectorAll(':scope > ul');
+        	if (nodeList.length > 0) {
+        		li.classList.add('has-children');
+        		tree(nodeList[0].querySelectorAll('li'));
+	        }
+        });
     }
 </script>
 
