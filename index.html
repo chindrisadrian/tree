@@ -3,7 +3,8 @@
 	<title>Tree</title>
 	<style>
 		.tree ul {
-			list-style: none
+			list-style: none;
+			padding: 0;
 		}
 		.tree ul ul,
 		.tree div > div{
@@ -18,11 +19,11 @@
 		.tree div.has-children:before {
 			content: '+';
 		}
-		.tree li.has-children.open:before
+		.tree li.has-children.open:before,
 		.tree div.has-children.open:before{
 			content: '-';
 		}
-		/* div */
+		.tree li.has-children > ul,
 		.tree div.has-children > div {
 			padding-left: 40px;
 		}
@@ -65,7 +66,45 @@
 	</ul>
 </div>
 
-<div class="tree" style="padding-left: 40px; border-top: 2px solid #333">
+<hr>
+
+<div class="tree">
+	<ul>
+		<li>trollbert
+			<ul>
+				<li>mumu</li>
+			</ul>
+		</li>
+		<li>cucu
+			<ul>
+				<li>mucu
+					<ul>
+						<li>bubu</li>
+						<li>bibi</li>
+						<li>baba
+							<ul>
+								<li>x</li>
+								<li>y</li>
+								<li>z</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>cucu</li>
+			</ul>
+		</li>
+		<li>pipi</li>
+		<li>humpty
+			<ul>
+				<li>dumpty</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
+<hr>
+
+<div class="tree">
 	<div>trollbert
 		<div>
 			<div>mumu</div>
@@ -99,79 +138,89 @@
 <script>
 	
 	var tree = (function () {
-		function init(elements) {
-			elements.forEach(function (element) {
-				if (!element.querySelector('ul')) {
-					return;
-				}
-				addEventListener(element);
-				travers(element.querySelectorAll(':scope > ul > li'))
+		var trees = {
+			'ul': {},
+			'div': {}
+		};
+		
+		function init() {
+			document.querySelectorAll('.tree').forEach(function (element) {
+				var type = getType(element);
+				trees[type][uniqueId(element)] = element;
 			});
+			addClasses();
+			addEventListeners();
 		}
 		
-		function addEventListener(element) {
-			element.addEventListener('click', function (e) {
-				var li = e.target;
-				if (li.getElementsByTagName('ul').length == 0) {
-					return;
-				}
-				li.classList.toggle('open');
-			});
+		function uniqueId(element) {
+			if (!element.id) {
+				element.id = 'unique-id-' + Math.random().toString(36).substr(2, 9);
+			}
+			return element.id;
 		}
 		
-		function travers(collection) {
-			collection.forEach(function (li) {
-				var nodeList = li.querySelectorAll(':scope > ul');
-				if (nodeList.length > 0) {
-					li.classList.add('has-children');
-					travers(nodeList[0].querySelectorAll('li'));
+		function getType(element) {
+			return (element.querySelectorAll(':scope > div').length != 0 ? 'div' : 'ul');
+		}
+		
+		function addEventListeners() {
+			for (var type in trees) {
+				for (var id in trees[type]) {
+					var element = trees[type][id];
+					element.addEventListener('click', function (event) {
+						var element = this;
+						var type = getType(element);
+						var clickedELement = event.target;
+						if (clickedELement.getElementsByTagName(type).length == 0) {
+							return;
+						}
+						clickedELement.classList.toggle('open');
+					});
 				}
-			});
+			};
+		}
+		
+		function addClasses() {
+			var collection;
+			for (var type in trees) {
+				for (var id in trees[type]) {
+					if (type == 'ul') {
+						collection = trees[type][id].querySelectorAll(':scope > ul > li');
+					}
+					if (type == 'div') {
+						collection = trees[type][id].querySelectorAll(':scope > div');
+					}
+					walk(collection, type);
+				}
+			}
+			
+			function walk(collection, type) {
+				collection.forEach(function (element) {
+					var newCollection;
+					var nodeList = element.querySelectorAll(':scope > ' + type);
+					
+					if (nodeList.length == 0) {
+						return;
+					}
+					
+					if (type == 'ul') {
+						newCollection = nodeList[0].querySelectorAll('li');
+					}
+					if (type == 'div') {
+						newCollection = nodeList[0].querySelectorAll(':scope > div');
+					}
+					element.classList.add('has-children');
+					walk(newCollection, type);
+				});
+			}
 		}
 		
 		return {
 			init: init
 		}
 	})();
-	tree.init(document.querySelectorAll('.tree'));
-
 	
-	var treeDiv = function () {
-		function init(elements) {
-			elements.forEach(function (element) {
-				if (!element.querySelector('div')) {
-					return;
-				}
-				addEventListener(element);
-				traverse(element.querySelectorAll(':scope > div'))
-			});
-		}
-		
-		function addEventListener(element) {
-			element.addEventListener('click', function (event) {
-				var div = event.target;
-				if (div.getElementsByTagName('div').length == 0) {
-					return;
-				}
-				div.classList.toggle('open');
-			});
-		}
-		
-		function traverse(collection) {
-			collection.forEach(function (div) {
-				var node = div.querySelectorAll(':scope > div');
-				if (node.length > 0) {
-					div.classList.add('has-children');
-					traverse(node[0].querySelectorAll(':scope > div'));
-				}
-			})
-		}
-		
-		return {
-			init: init
-		}
-	}();
-	treeDiv.init(document.querySelectorAll('.tree'))
+	tree.init();
 </script>
 
 </body>
