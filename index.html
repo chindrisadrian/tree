@@ -1,90 +1,187 @@
 <html>
 <head>
-    <title>Tree</title>
-    <style>
-        .tree ul {
-            list-style: none
-        }
-        .tree ul ul {
-            display: none;
-        }
-        .tree li.open > ul {
-            display: block;
-        }
-        .tree li.has-children:before {
-            content: '+';
-        }
-        .tree li.has-children.open:before {
-            content: '-';
-        }
-     </style>
+	<title>Tree</title>
+	<style>
+		.tree ul {
+			list-style: none
+		}
+		.tree ul ul {
+			display: none;
+		}
+		.tree li.open > ul {
+			display: block;
+		}
+		.tree li.has-children:before {
+			content: '+';
+		}
+		.tree li.has-children.open:before {
+			content: '-';
+		}
+		
+		.tree div > div {
+			display: none;
+		}
+		.tree div.open > div,
+		.tree div.open > div > div {
+			display: block;
+		}
+		.tree div.has-children > div {
+			padding-left: 40px;
+		}
+		.tree div.has-children:before {
+			content: '+';
+			float: left;
+		}
+		.tree div.has-children.open:before {
+			content: '-';
+			float: left;
+		}
+		
+	</style>
 </head>
 <body>
 
 <div class="tree">
-    <ul>
-        <li>trollbert
-            <ul>
-                <li>mumu</li>
-            </ul>
-        </li>
-        <li>cucu
-            <ul>
-                <li>mucu
-                    <ul>
-                        <li>bubu</li>
-                        <li>bibi</li>
-	                      <li>baba
-		                      <ul>
-			                      <li>x</li>
-			                      <li>y</li>
-			                      <li>z</li>
-		                      </ul>
-	                      </li>
-                    </ul>
-                </li>
-                <li>cucu</li>
-            </ul>
-        </li>
-        <li>pipi</li>
-        <li>humpty
-            <ul>
-                <li>dumpty</li>
-            </ul>
-        </li>
-    </ul>
+	<ul>
+		<li>trollbert
+			<ul>
+				<li>mumu</li>
+			</ul>
+		</li>
+		<li>cucu
+			<ul>
+				<li>mucu
+					<ul>
+						<li>bubu</li>
+						<li>bibi</li>
+						<li>baba
+							<ul>
+								<li>x</li>
+								<li>y</li>
+								<li>z</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>cucu</li>
+			</ul>
+		</li>
+		<li>pipi</li>
+		<li>humpty
+			<ul>
+				<li>dumpty</li>
+			</ul>
+		</li>
+	</ul>
 </div>
 
+<div class="tree" style="padding-left: 40px; border-top: 2px solid #333">
+	<div>trollbert
+		<div>
+			<div>mumu</div>
+		</div>
+	</div>
+	<div>cucu
+		<div>
+			<div>mucu
+				<div>
+					<div>bubu</div>
+					<div>bibi</div>
+					<div>baba
+						<div>
+							<div>x</div>
+							<div>y</div>
+							<div>z</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div>cucu</div>
+		</div>
+	</div>
+	<div>pipi</div>
+	<div>humpty
+		<div>
+			<div>dumpty</div>
+		</div>
+	</div>
+</div>
 <script>
+	
+	var tree = (function () {
+		function init(elements) {
+			elements.forEach(function (element) {
+				if (!element.querySelector('ul')) {
+					return;
+				}
+				addEventListener(element);
+				travers(element.querySelectorAll(':scope > ul > li'))
+			});
+		}
+		
+		function addEventListener(element) {
+			element.addEventListener('click', function (e) {
+				var li = e.target;
+				if (li.getElementsByTagName('ul').length == 0) {
+					return;
+				}
+				li.classList.toggle('open');
+			});
+		}
+		
+		function travers(collection) {
+			collection.forEach(function (li) {
+				var nodeList = li.querySelectorAll(':scope > ul');
+				if (nodeList.length > 0) {
+					li.classList.add('has-children');
+					travers(nodeList[0].querySelectorAll('li'));
+				}
+			});
+		}
+		
+		return {
+			init: init
+		}
+	})();
+	tree.init(document.querySelectorAll('.tree'));
 
-    var tree = (function () {
-        document.querySelector('.tree').addEventListener('click', function (e) {
-          var li = e.target;
-          if (li.getElementsByTagName('ul').length === 0) {
-              return;
-          }
-          li.classList.toggle('open');
-        });
-
-        function tree(collection) {
-            collection.forEach(function (li) {
-                var nodeList = li.querySelectorAll(':scope > ul');
-                if (nodeList.length > 0) {
-                    li.classList.add('has-children');
-                    tree(nodeList[0].querySelectorAll('li'));
-                }
-            });
-        }
-
-        return {
-            tree: tree
-        }
-    })();
-
-    collection = document.querySelectorAll('.tree > ul > li');
-
-    tree.tree(collection);
-
+	
+	var treeDiv = function () {
+		function init(elements) {
+			elements.forEach(function (element) {
+				if (!element.querySelector('div')) {
+					return;
+				}
+				addEventListener(element);
+				traverse(element.querySelectorAll(':scope > div'))
+			});
+		}
+		
+		function addEventListener(element) {
+			element.addEventListener('click', function (event) {
+				var div = event.target;
+				if (div.getElementsByTagName('div').length == 0) {
+					return;
+				}
+				div.classList.toggle('open');
+			});
+		}
+		
+		function traverse(collection) {
+			collection.forEach(function (div) {
+				var node = div.querySelectorAll(':scope > div');
+				if (node.length > 0) {
+					div.classList.add('has-children');
+					traverse(node[0].querySelectorAll(':scope > div'));
+				}
+			})
+		}
+		
+		return {
+			init: init
+		}
+	}();
+	treeDiv.init(document.querySelectorAll('.tree'))
 </script>
 
 </body>
