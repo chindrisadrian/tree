@@ -5,36 +5,26 @@
 		.tree ul {
 			list-style: none
 		}
-		.tree ul ul {
+		.tree ul ul,
+		.tree div > div{
 			display: none;
 		}
-		.tree li.open > ul {
-			display: block;
-		}
-		.tree li.has-children:before {
-			content: '+';
-		}
-		.tree li.has-children.open:before {
-			content: '-';
-		}
-		
-		.tree div > div {
-			display: none;
-		}
+		.tree li.open > ul,
 		.tree div.open > div,
 		.tree div.open > div > div {
 			display: block;
 		}
-		.tree div.has-children > div {
-			padding-left: 40px;
-		}
+		.tree li.has-children:before,
 		.tree div.has-children:before {
 			content: '+';
-			float: left;
 		}
-		.tree div.has-children.open:before {
+		.tree li.has-children.open:before
+		.tree div.has-children.open:before{
 			content: '-';
-			float: left;
+		}
+		/* div */
+		.tree div.has-children > div {
+			padding-left: 40px;
 		}
 		
 	</style>
