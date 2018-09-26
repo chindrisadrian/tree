@@ -135,8 +135,8 @@
 		</div>
 	</div>
 </div>
+
 <script>
-	
 	var tree = (function () {
 		var trees = {
 			'ul': {},
@@ -145,8 +145,7 @@
 		
 		function init() {
 			document.querySelectorAll('.tree').forEach(function (element) {
-				var type = getType(element);
-				trees[type][uniqueId(element)] = element;
+				trees[getType(element)][uniqueId(element)] = element;
 			});
 			addClasses();
 			addEventListeners();
