@@ -1,0 +1,223 @@
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.core.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<title>Tree</title>
+	<style>
+		.tree ul {
+			list-style: none;
+			padding: 0;
+		}
+		.tree ul ul,
+		.tree div > div{
+			display: none;
+		}
+		.tree li.open > ul,
+		.tree div.open > div,
+		.tree div.open > div > div {
+			display: block;
+		}
+		.tree li.has-children:before,
+		.tree div.has-children:before {
+			content: '+';
+		}
+		.tree li.has-children.open:before,
+		.tree div.has-children.open:before{
+			content: '-';
+		}
+		.tree li.has-children > ul,
+		.tree div.has-children > div {
+			padding-left: 40px;
+		}
+		
+	</style>
+</head>
+<body>
+
+<div class="tree">
+	<ul>
+		<li>trollbert
+			<ul>
+				<li>mumu</li>
+			</ul>
+		</li>
+		<li>cucu
+			<ul>
+				<li>mucu
+					<ul>
+						<li>bubu</li>
+						<li>bibi</li>
+						<li>baba
+							<ul>
+								<li>x</li>
+								<li>y</li>
+								<li>z</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>cucu</li>
+			</ul>
+		</li>
+		<li>pipi</li>
+		<li>humpty
+			<ul>
+				<li>dumpty</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
+<hr>
+
+<div class="tree">
+	<ul>
+		<li>trollbert
+			<ul>
+				<li>mumu</li>
+			</ul>
+		</li>
+		<li>cucu
+			<ul>
+				<li>mucu
+					<ul>
+						<li>bubu</li>
+						<li>bibi</li>
+						<li>baba
+							<ul>
+								<li>x</li>
+								<li>y</li>
+								<li>z</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>cucu</li>
+			</ul>
+		</li>
+		<li>pipi</li>
+		<li>humpty
+			<ul>
+				<li>dumpty</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
+<hr>
+
+<div class="tree">
+	<div>trollbert
+		<div>
+			<div>mumu</div>
+		</div>
+	</div>
+	<div>cucu
+		<div>
+			<div>mucu
+				<div>
+					<div>bubu</div>
+					<div>bibi</div>
+					<div>baba
+						<div>
+							<div>x</div>
+							<div>y</div>
+							<div>z</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div>cucu</div>
+		</div>
+	</div>
+	<div>pipi</div>
+	<div>humpty
+		<div>
+			<div>dumpty</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	var tree = (function () {
+		var trees = {
+			'ul': {},
+			'div': {}
+		};
+		
+		function init(event) {
+            $tree = $('.tree');
+			_.each($tree, function (element) {
+                trees[getType(element)][element.id = _.uniqueId('unique-id-')] = element;
+			});
+			addClasses();
+			addEventListeners();
+		}
+		
+		function getType(element) {
+			return ($(element.children).is('div') ? 'div' : 'ul');
+		}
+		
+		function addEventListeners() {
+            for (var type in trees) {
+				for (var id in trees[type]) {
+					var element = trees[type][id];
+					$(element).on('click', function (event) {
+						var element = this;
+						var type = getType(element);
+						var clickedELement = $(event.target);
+						if (clickedELement.find(type).length == 0) {
+							return;
+						}
+						clickedELement.toggleClass('open');
+					});
+				}
+			};
+		}
+		
+		function addClasses() {
+			var collection;
+			for (var type in trees) {
+				for (var id in trees[type]) {
+					if (type == 'ul') {
+                        collection = $(trees[type][id]).find('> ul > li');
+					}
+					if (type == 'div') {
+                        collection = $(trees[type][id]).find('> div');
+					}
+					walk(collection, type);
+				}
+			}
+			
+			function walk(collection, type) {
+				_.each(collection, function (element) {
+                    var newCollection;
+					var nodeList = $(element).find(' > ' + type);
+					
+					if (nodeList.length == 0) {
+						return;
+					}
+					
+					if (type == 'ul') {
+                        newCollection = $(nodeList).find('> li');
+                        
+					}
+					if (type == 'div') {
+						newCollection = $(nodeList).find('> div');
+					}
+					$(element).addClass('has-children');
+					walk(newCollection, type);
+				});
+			}
+		}
+		
+		return {
+			init: init
+		}
+	})();
+	
+	tree.init();
+</script>
+
+</body>
+</html>
