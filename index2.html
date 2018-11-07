@@ -146,9 +146,10 @@
 		};
 		
 		function init(event) {
-            $tree = $('.tree');
+			$tree = $('.tree');
 			_.each($tree, function (element) {
-				trees[getType(element)][element.id = _.uniqueId('unique-id-')] = element;
+				element.id = element.id || _.uniqueId('unique-id-');
+				trees[getType(element)][element.id] = element;
 			});
 			addClasses();
 			addEventListeners();
@@ -159,48 +160,42 @@
 		}
 		
 		function addEventListeners() {
-            for (var type in trees) {
-				for (var id in trees[type]) {
-					var element = trees[type][id];
-					$(element).on('click', function (event) {
-						var element = this;
-						var type = getType(element);
-						var clickedELement = $(event.target);
-						if (_.isEmpty(clickedELement.find(type))) {
+			_.each(trees, function (tree, type) {
+				_.each(tree, function (leaf) {
+					$(leaf).on('click', function (event) {
+						var clickedElement = $(event.target);
+						if (_.isEmpty(clickedElement.find(type))) {
 							return;
 						}
-						clickedELement.toggleClass('open');
+						clickedElement.toggleClass('open');
 					});
-				}
-			};
+				})
+			})
 		}
 		
 		function addClasses() {
 			var collection;
-			for (var type in trees) {
-				for (var id in trees[type]) {
+			_.each(trees, function (tree, type) {
+				_.each(tree, function (leaf) {
 					if (type == 'ul') {
-            collection = $(trees[type][id]).find('> ul > li');
+			      collection = $(leaf).find('> ul > li');
 					}
 					if (type == 'div') {
-            collection = $(trees[type][id]).find('> div');
+			      collection = $(leaf).find('> div');
 					}
 					walk(collection, type);
-				}
-			}
+				});
+			});
 			
 			function walk(collection, type) {
 				_.each(collection, function (element) {
           var newCollection;
 					var nodeList = $(element).find(' > ' + type);
-					
 					if (_.isEmpty(nodeList)) {
 						return;
 					}
-					
 					if (type == 'ul') {
-                        newCollection = $(nodeList).find('> li');
-                        
+						newCollection = $(nodeList).find('> li');
 					}
 					if (type == 'div') {
 						newCollection = $(nodeList).find('> div');
