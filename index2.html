@@ -148,7 +148,7 @@
 		function init(event) {
             $tree = $('.tree');
 			_.each($tree, function (element) {
-                trees[getType(element)][element.id = _.uniqueId('unique-id-')] = element;
+				trees[getType(element)][element.id = _.uniqueId('unique-id-')] = element;
 			});
 			addClasses();
 			addEventListeners();
@@ -166,7 +166,7 @@
 						var element = this;
 						var type = getType(element);
 						var clickedELement = $(event.target);
-						if (clickedELement.find(type).length == 0) {
+						if (_.isEmpty(clickedELement.find(type))) {
 							return;
 						}
 						clickedELement.toggleClass('open');
@@ -180,10 +180,10 @@
 			for (var type in trees) {
 				for (var id in trees[type]) {
 					if (type == 'ul') {
-                        collection = $(trees[type][id]).find('> ul > li');
+            collection = $(trees[type][id]).find('> ul > li');
 					}
 					if (type == 'div') {
-                        collection = $(trees[type][id]).find('> div');
+            collection = $(trees[type][id]).find('> div');
 					}
 					walk(collection, type);
 				}
@@ -191,10 +191,10 @@
 			
 			function walk(collection, type) {
 				_.each(collection, function (element) {
-                    var newCollection;
+          var newCollection;
 					var nodeList = $(element).find(' > ' + type);
 					
-					if (nodeList.length == 0) {
+					if (_.isEmpty(nodeList)) {
 						return;
 					}
 					
