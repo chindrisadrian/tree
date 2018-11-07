@@ -1,0 +1,134 @@
+<html>
+<head>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.core.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<title>Tree</title>
+	<style>
+		.tree ul {
+			list-style: none;
+			padding: 0;
+		}
+		.tree ul ul,
+		.tree div > div{
+			display: none;
+		}
+		.tree li.open > ul,
+		.tree div.open > div,
+		.tree div.open > div > div {
+			display: block;
+		}
+		.tree li.has-children:before,
+		.tree div.has-children:before {
+			content: '+';
+		}
+		.tree li.has-children.open:before,
+		.tree div.has-children.open:before{
+			content: '-';
+		}
+		.tree li.has-children > ul,
+		.tree div.has-children > div {
+			padding-left: 40px;
+		}
+	
+	</style>
+</head>
+<body>
+	
+	<script>
+		tree =
+			[
+				{
+					"name":"trollbert",
+					"nodes":[
+						{
+							"name":"mumu"
+						}
+					]
+				},
+				{
+					"name":"cucu",
+					"nodes":[
+						{
+							"name":"mucu",
+							"nodes":[
+								{
+									"name":"bubu"
+								},
+								{
+									"name":"bibi"
+								},
+								{
+									"name":"baba",
+									"nodes": [
+										{
+											"name":"x"
+										},
+										{
+											"name":"y"
+										},
+										{
+											"name":"z"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name":"cucu"
+						}
+					]
+				},
+				{
+					"name":"pipi"
+				},
+				{
+					"name":"humpty",
+					"nodes":[
+						{
+							"name":"dumpty"
+						}
+					]
+				}
+			];
+
+		// -trollbert
+		// 	mumu
+		// -cucu
+		// 	-mucu
+		// 		bubu
+		// 		bibi
+		// 		-baba
+		// 			x
+		// 			y
+		// 			z
+		// 	cucu
+		// pipi
+		// -humpty
+		// 	dumpty
+		
+		console.log(tree);
+		var $body = $('body');
+		
+		function addItem(type, className, name) {
+			var newItem = document.createElement(type);
+			// newItem.classList.add(className);
+			newItem.append(name);
+			return newItem;
+		}
+		
+		function renderNodes (tree) {
+			_.each(tree, function (node) {
+				$body.append(addItem('div','bibi',node.name));
+				if(node.nodes) {
+					renderNodes(node.nodes);
+				}
+			});
+		}
+		
+		renderNodes(tree);
+		
+		
+		
+	</script>
+</body>
+</html>
