@@ -1,7 +1,5 @@
 <html>
 <head>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.core.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 	<title>Tree</title>
 	<style>
 		.tree ul {
@@ -31,102 +29,102 @@
 		}
 	
 	</style>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.core.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="https://requirejs.org/docs/release/2.3.6/comments/require.js"></script>
 </head>
 <body>
 	
-	<script>
-		tree =
-			[
-				{
-					"name":"trollbert",
-					"nodes":[
-						{
-							"name":"mumu"
-						}
-					]
-				},
-				{
-					"name":"cucu",
-					"nodes":[
-						{
-							"name":"mucu",
-							"nodes":[
-								{
-									"name":"bubu"
-								},
-								{
-									"name":"bibi"
-								},
-								{
-									"name":"baba",
-									"nodes": [
-										{
-											"name":"x"
-										},
-										{
-											"name":"y"
-										},
-										{
-											"name":"z"
-										}
-									]
-								}
-							]
-						},
-						{
-							"name":"cucu"
-						}
-					]
-				},
-				{
-					"name":"pipi"
-				},
-				{
-					"name":"humpty",
-					"nodes":[
-						{
-							"name":"dumpty"
-						}
-					]
-				}
-			];
-
-		// -trollbert
-		// 	mumu
-		// -cucu
-		// 	-mucu
-		// 		bubu
-		// 		bibi
-		// 		-baba
-		// 			x
-		// 			y
-		// 			z
-		// 	cucu
-		// pipi
-		// -humpty
-		// 	dumpty
+<script>
+$.getJSON('tree.json').done(function (json) {
+	tree.init(json);
+	tree.init(json);
+	tree.init(json);
+	tree.init(json);
+});
+	
+	
+	
+var tree = (function () {
+	var $body = $('body');
+	
+	function init(json) {
+		var	$tree = $('<div>', { id: _.uniqueId('unique-id-'), class: 'tree' });
+		var element = $tree[0];
 		
-		console.log(tree);
-		var $body = $('body');
+		$body.append($tree);
+		$body.append('<hr>');
 		
-		function addItem(type, className, name) {
-			var newItem = document.createElement(type);
-			// newItem.classList.add(className);
-			newItem.append(name);
-			return newItem;
+		renderNodes(json, $tree);
+		addClasses(element);
+		addEventListeners(element);
+	}
+	
+	function renderNodes(treeJson, $container) {
+		_.each(treeJson, function (node) {
+			var $newNode = $('<div>');
+			if (!_.isEmpty(node.nodes)) {
+				var $div = $('<div>');
+				$div.append(node.name);
+				$div.append($newNode);
+				$container.append($div);
+				renderNodes(node.nodes, $newNode);
+			} else {
+				$newNode.append(node.name);
+				$container.append($newNode);
+			}
+		});
+	}
+	
+	function getType(element) {
+		return ($(element.children).is('div') ? 'div' : 'ul');
+	}
+	
+	function addEventListeners(tree) {
+		var type = getType(tree);
+		$(tree).on('click', function (event) {
+			var $clickedElement = $(event.target);
+			if (_.isEmpty($clickedElement.find(type))) {
+				return;
+			}
+			$clickedElement.toggleClass('open');
+		});
+	}
+	
+	function addClasses(tree) {
+		var type = getType(tree);
+		var collection;
+		if (type == 'ul') {
+			collection = $(tree).find('> ul > li');
 		}
+		if (type == 'div') {
+			collection = $(tree).find('> div');
+		}
+		walk(collection, type);
 		
-		function renderNodes (tree) {
-			_.each(tree, function (node) {
-				$body.append(addItem('div','bibi',node.name));
-				if(node.nodes) {
-					renderNodes(node.nodes);
+		function walk(collection, type) {
+			_.each(collection, function (element) {
+				var newCollection;
+				var nodeList = $(element).find(' > ' + type);
+				if (_.isEmpty(nodeList)) {
+					return;
 				}
+				if (type == 'ul') {
+					newCollection = $(nodeList).find('> li');
+				}
+				if (type == 'div') {
+					newCollection = $(nodeList).find('> div');
+				}
+				$(element).addClass('has-children');
+				walk(newCollection, type);
 			});
 		}
-		
-		renderNodes(tree);
-		
+	}
+	
+	return {
+		init: init
+	}
+})();
 		
 		
 	</script>
